@@ -1,17 +1,32 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>The Python module julia · Python.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.svg" alt="Python.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">Python.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../getting-started/">Getting Started</a></li><li><a class="tocitem" href="../pythonjl/">The Julia module <code>Python</code></a></li><li class="is-active"><a class="tocitem" href>The Python module <code>julia</code></a><ul class="internal"><li><a class="tocitem" href="#Wrapper-types"><span>Wrapper types</span></a></li></ul></li><li><a class="tocitem" href="../conversion/">Conversion Rules</a></li><li><a class="tocitem" href="../compat/">Compatability Tools</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>The Python module <code>julia</code></a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>The Python module <code>julia</code></a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/cjdoris/Python.jl/blob/master/docs/src/juliapy.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="The-Python-module-julia"><a class="docs-heading-anchor" href="#The-Python-module-julia">The Python module <code>julia</code></a><a id="The-Python-module-julia-1"></a><a class="docs-heading-anchor-permalink" href="#The-Python-module-julia" title="Permalink"></a></h1><p>For interactive or scripting use, the simplest way to get started is:</p><pre><code class="language-python">from julia import Main as jl</code></pre><p>This loads a single variable <code>jl</code> (a <a href="#julia.ModuleValue"><code>julia.ModuleValue</code></a>) which represents the <code>Main</code> module in Julia, from which all of Julia&#39;s functionality is available.</p><p>If you are writing a package which uses Julia, then to avoid polluting the global <code>Main</code> namespace you should do:</p><pre><code class="language-python">import julia; jl = julia.newmodule(&quot;SomeName&quot;);</code></pre><p>Now you can do <code>jl.rand(jl.Bool, 5, 5)</code>, which is equivalent to <code>rand(Bool, 5, 5)</code> in Julia.</p><p>When a Python value is passed to Julia, then typically it will be converted according to <a href="../conversion/#Python-to-Julia">this table</a> with <code>T=Any</code>. Sometimes a more specific type will be used, such as when assigning to an array whose element type is known.</p><p>When a Julia value is returned to Python, it will normally be converted according to <a href="../conversion/#Julia-to-Python">this table</a>.</p><h2 id="Wrapper-types"><a class="docs-heading-anchor" href="#Wrapper-types">Wrapper types</a><a id="Wrapper-types-1"></a><a class="docs-heading-anchor-permalink" href="#Wrapper-types" title="Permalink"></a></h2><p>Apart from a few fundamental immutable types (see <a href="../conversion/#Julia-to-Python">here</a>), all Julia values are by default converted into Python to some <a href="#julia.AnyValue"><code>julia.AnyValue</code></a> object, which wraps the original value. Some types are converted to a subclass of <a href="#julia.AnyValue"><code>julia.AnyValue</code></a> which provides additional Python semantics –- e.g. Julia vectors are interpreted as Python sequences.</p><p>There is also a <a href="#julia.RawValue"><code>julia.RawValue</code></a> object, which gives a stricter &quot;Julia-only&quot; interface, documented below. These types all inherit from <code>julia.ValueBase</code>:</p><ul><li><code>julia.ValueBase</code><ul><li><a href="#julia.RawValue"><code>julia.RawValue</code></a></li><li><a href="#julia.AnyValue"><code>julia.AnyValue</code></a><ul><li><a href="#julia.NumberValue"><code>julia.NumberValue</code></a><ul><li><code>julia.ComplexValue</code></li><li><code>julia.RealValue</code><ul><li><code>julia.RationalValue</code></li><li><code>julia.IntegerValue</code></li></ul></li></ul></li><li><a href="#julia.ArrayValue"><code>julia.ArrayValue</code></a><ul><li><code>julia.VectorValue</code></li></ul></li><li><a href="#julia.DictValue"><code>julia.DictValue</code></a></li><li><a href="#julia.SetValue"><code>julia.SetValue</code></a></li><li><a href="#julia.IOValue"><code>julia.IOValue</code></a><ul><li><code>julia.RawIOValue</code></li><li><code>julia.BufferedIOValue</code></li><li><code>julia.TextIOValue</code></li></ul></li><li><a href="#julia.ModuleValue"><code>julia.ModuleValue</code></a></li><li><a href="#julia.TypeValue"><code>julia.TypeValue</code></a></li></ul></li></ul></li></ul><article class="docstring">
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>The Python module julia · Python.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.svg" alt="Python.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">Python.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../getting-started/">Getting Started</a></li><li><a class="tocitem" href="../pythonjl/">The Julia module <code>Python</code></a></li><li class="is-active"><a class="tocitem" href>The Python module <code>julia</code></a><ul class="internal"><li><a class="tocitem" href="#Wrapper-types"><span>Wrapper types</span></a></li></ul></li><li><a class="tocitem" href="../conversion/">Conversion Rules</a></li><li><a class="tocitem" href="../compat/">Compatability Tools</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>The Python module <code>julia</code></a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>The Python module <code>julia</code></a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/cjdoris/Python.jl/blob/master/docs/src/juliapy.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="The-Python-module-julia"><a class="docs-heading-anchor" href="#The-Python-module-julia">The Python module <code>julia</code></a><a id="The-Python-module-julia-1"></a><a class="docs-heading-anchor-permalink" href="#The-Python-module-julia" title="Permalink"></a></h1><p>For interactive or scripting use, the simplest way to get started is:</p><pre><code class="language-python">from julia import Main as jl</code></pre><p>This loads a single variable <code>jl</code> (a <a href="#julia.ModuleValue"><code>ModuleValue</code></a>) which represents the <code>Main</code> module in Julia, from which all of Julia&#39;s functionality is available.</p><p>If you are writing a package which uses Julia, then to avoid polluting the global <code>Main</code> namespace you should do:</p><pre><code class="language-python">import julia; jl = julia.newmodule(&quot;SomeName&quot;);</code></pre><p>Now you can do <code>jl.rand(jl.Bool, 5, 5)</code>, which is equivalent to <code>rand(Bool, 5, 5)</code> in Julia.</p><p>When a Python value is passed to Julia, then typically it will be converted according to <a href="../conversion/#Python-to-Julia">this table</a> with <code>T=Any</code>. Sometimes a more specific type will be used, such as when assigning to an array whose element type is known.</p><p>When a Julia value is returned to Python, it will normally be converted according to <a href="../conversion/#Julia-to-Python">this table</a>.</p><h2 id="Wrapper-types"><a class="docs-heading-anchor" href="#Wrapper-types">Wrapper types</a><a id="Wrapper-types-1"></a><a class="docs-heading-anchor-permalink" href="#Wrapper-types" title="Permalink"></a></h2><p>Apart from a few fundamental immutable types (see <a href="../conversion/#Julia-to-Python">here</a>), all Julia values are by default converted into Python to some <a href="#julia.AnyValue"><code>AnyValue</code></a> object, which wraps the original value. Some types are converted to a subclass of <a href="#julia.AnyValue"><code>AnyValue</code></a> which provides additional Python semantics –- e.g. Julia vectors are interpreted as Python sequences.</p><p>There is also a <a href="#julia.RawValue"><code>RawValue</code></a> object, which gives a stricter &quot;Julia-only&quot; interface, documented below. These types all inherit from <code>ValueBase</code>:</p><ul><li><code>ValueBase</code><ul><li><a href="#julia.RawValue"><code>RawValue</code></a></li><li><a href="#julia.AnyValue"><code>AnyValue</code></a><ul><li><a href="#julia.NumberValue"><code>NumberValue</code></a><ul><li><code>ComplexValue</code></li><li><code>RealValue</code><ul><li><code>RationalValue</code></li><li><code>IntegerValue</code></li></ul></li></ul></li><li><a href="#julia.ArrayValue"><code>ArrayValue</code></a><ul><li><code>VectorValue</code></li></ul></li><li><a href="#julia.DictValue"><code>DictValue</code></a></li><li><a href="#julia.SetValue"><code>SetValue</code></a></li><li><a href="#julia.IOValue"><code>IOValue</code></a><ul><li><code>RawIOValue</code></li><li><code>BufferedIOValue</code></li><li><code>TextIOValue</code></li></ul></li><li><a href="#julia.ModuleValue"><code>ModuleValue</code></a></li><li><a href="#julia.TypeValue"><code>TypeValue</code></a></li></ul></li></ul></li></ul><article class="docstring">
     <header>
         <a class="docstring-binding" id="julia.AnyValue" href="#julia.AnyValue">julia.AnyValue</a>
         —
         <span class="docstring-category">Python Class</span>
     </header>
     <section>
+        Wraps any Julia object, giving it some basic Python semantics. Subtypes provide extra semantics.
+
+        Supports `repr(x)`, `str(x)`, attributes (`x.attr`), calling (`x(a,b)`), iteration, comparisons, `len(x)`, `a in x`, `dir(x)`.
+
+        Calling, indexing, attribute access, etc. will convert the result to a Python object according to <a href="../conversion/#Julia-to-Python">this table</a>.
+        This is typically a builtin Python type (for immutables) or a subtype of `AnyValue`.
+
+        Attribute access can be used to access Julia properties as well as normal class members.
+        In the case of a name clash, the class member will take precedence.
+        For convenience with Julia naming conventions, `_b` at the end of an attribute is replaced with `!` and `_bb` is replaced with `!!`.
+
         <h6>Members</h6>
         <ul>
-            <li><code>__jl_raw()</code>: Convert to a <a href="#julia.RawValue"><code>julia.RawValue</code></a></li>
+            <li><code>_jl_raw()</code>: Convert to a <a href="#julia.RawValue"><code>RawValue</code></a></li>
+            <li><code>_jl_display()</code>: Display the object using Julia's display mechanism.</li>
+            <li><code>_jl_help()</code>: Display help for the object.</li>
         </ul>
     </section>
-</article><article class="docstring">
+</article>
+
+<article class="docstring">
     <header>
         <a class="docstring-binding" id="julia.NumberValue" href="#julia.NumberValue">julia.NumberValue</a>
         —
@@ -19,9 +34,11 @@
     </header>
     <section>
         <p>This wraps any Julia <code>Number</code> value. It is a subclass of <code>numbers.Number</code> and behaves similar to other Python numbers.</p>
-        <p>There are also subtypes <code>julia.ComplexValue</code>, <code>julia.RealValue</code>, <code>julia.RationalValue</code>, <code>julia.IntegerValue</code> which wrap values of the corresponding Julia types, and are subclasses of the corresponding <code>numbers</code> ABC.</p>
+        <p>There are also subtypes <code>ComplexValue</code>, <code>RealValue</code>, <code>RationalValue</code>, <code>IntegerValue</code> which wrap values of the corresponding Julia types, and are subclasses of the corresponding <code>numbers</code> ABC.</p>
     </section>
-</article><article class="docstring">
+</article>
+
+<article class="docstring">
     <header>
         <a class="docstring-binding" id="julia.ArrayValue" href="#julia.ArrayValue">julia.ArrayValue</a>
         —
@@ -30,7 +47,7 @@
     <section>
         <p>This wraps any Julia <code>AbstractArray</code> value. It is a subclass of <code>collections.abc.Collection</code>.</p>
         <p>It supports zero-up indexing, and can be indexed with integers or slices. Slicing returns a view of the original array.</p>
-        <p>There is also the subtype <code>julia.VectorValue</code> which wraps any <code>AbstractVector</code>. It is a subclass of <code>collections.abc.Sequence</code> and behaves similar to a Python <code>list</code>.</p>
+        <p>There is also the subtype <code>VectorValue</code> which wraps any <code>AbstractVector</code>. It is a subclass of <code>collections.abc.Sequence</code> and behaves similar to a Python <code>list</code>.</p>
         <p>If the array is strided and its eltype is supported (i.e. <code>Bool</code>, <code>IntXX</code>, <code>UIntXX</code>, <code>FloatXX</code>, <code>Complex{FloatXX}</code>, <code>Ptr{Cvoid}</code> or <code>Tuple</code> or <code>NamedTuple</code> of these) then it supports the buffer protocol and the numpy array interface. This means that <code>numpy.asarray(this)</code> will yield a view of the original array, so mutations are visible on the original.</p>
         <p>Otherwise, the numpy <code>__array__</code> method is supported, and this returns an array of Python objects converted from the contents of the array. In this case, <code>numpy.asarray(this)</code> is a copy of the original array.</p>
         <h6>Members</h6>
@@ -41,7 +58,9 @@
             <li><code>reshape(shape)</code>: A reshaped view of the array.</li>
         </ul>
     </section>
-</article><article class="docstring">
+</article>
+
+<article class="docstring">
     <header>
         <a class="docstring-binding" id="julia.DictValue" href="#julia.DictValue">julia.DictValue</a>
         —
@@ -50,7 +69,9 @@
     <section>
         <p>This wraps any Julia <code>AbstractDict</code> value. It is a subclass of <code>collections.abc.Mapping</code> and behaves similar to a Python <code>dict</code>.</p>
     </section>
-</article><article class="docstring">
+</article>
+
+<article class="docstring">
     <header>
         <a class="docstring-binding" id="julia.SetValue" href="#julia.SetValue">julia.SetValue</a>
         —
@@ -59,7 +80,9 @@
     <section>
         <p>This wraps any Julia <code>AbstractSet</code> value. It is a subclass of <code>collections.abc.Set</code> and behaves similar to a Python <code>set</code>.</p>
     </section>
-</article><article class="docstring">
+</article>
+
+<article class="docstring">
     <header>
         <a class="docstring-binding" id="julia.IOValue" href="#julia.IOValue">julia.IOValue</a>
         —
@@ -67,15 +90,17 @@
     </header>
     <section>
         <p>This wraps any Julia <code>IO</code> value. It is a subclass of <code>io.IOBase</code> and behaves like Python files.</p>
-        <p>There are also subtypes <code>julia.RawIOValue</code>, <code>julia.BufferedIOValue</code> and <code>julia.TextIOValue</code>, which are subclasses of <code>io.RawIOBase</code> (unbuffered bytes), <code>io.BufferedIOBase</code> (buffered bytes) and <code>io.TextIOBase</code> (text).</p>
+        <p>There are also subtypes <code>RawIOValue</code>, <code>BufferedIOValue</code> and <code>TextIOValue</code>, which are subclasses of <code>io.RawIOBase</code> (unbuffered bytes), <code>io.BufferedIOBase</code> (buffered bytes) and <code>io.TextIOBase</code> (text).</p>
         <h6>Members</h6>
         <ul>
-            <li><code>torawio()</code>: Convert to a <code>julia.RawIOValue</code>, an un-buffered bytes file-like object. (See also <a href="../pythonjl/#Python.pyrawio"><code>pyrawio</code></a>.)
-            <li><code>tobufferedio()</code>: Convert to a <code>julia.BufferedIOValue</code>, an buffered bytes file-like object. Julia <code>IO</code> objects are converted to this by default. (See also <a href="../pythonjl/#Python.pybufferedio"><code>pybufferedio</code></a>.)
-            <li><code>totextio()</code>: Convert to a <code>julia.TextIOValue</code>, a text file-like object. (See also <a href="../pythonjl/#Python.pytextio"><code>pytextio</code></a>.)
+            <li><code>torawio()</code>: Convert to a <code>RawIOValue</code>, an un-buffered bytes file-like object. (See also <a href="../pythonjl/#Python.pyrawio"><code>pyrawio</code></a>.)
+            <li><code>tobufferedio()</code>: Convert to a <code>BufferedIOValue</code>, an buffered bytes file-like object. Julia <code>IO</code> objects are converted to this by default. (See also <a href="../pythonjl/#Python.pybufferedio"><code>pybufferedio</code></a>.)
+            <li><code>totextio()</code>: Convert to a <code>TextIOValue</code>, a text file-like object. (See also <a href="../pythonjl/#Python.pytextio"><code>pytextio</code></a>.)
         </ul>
     </section>
-</article><article class="docstring">
+</article>
+
+<article class="docstring">
     <header>
         <a class="docstring-binding" id="julia.ModuleValue" href="#julia.ModuleValue">julia.ModuleValue</a>
         —
@@ -83,12 +108,14 @@
     </header>
     <section>
         <p>This wraps any Julia <code>Module</code> value.</p>
-        <p>It is the same as <a href="#julia.AnyValue"><code>julia.AnyValue</code></a> except for one additional convenience method:</p>
+        <p>It is the same as <a href="#julia.AnyValue"><code>AnyValue</code></a> except for one additional convenience method:</p>
         <ul>
             <li><code>seval([module=self], code)</code>: Evaluates the given code (a string) in the given module.</li>
         </ul>
     </section>
-</article><article class="docstring">
+</article>
+
+<article class="docstring">
     <header>
         <a class="docstring-binding" id="julia.TypeValue" href="#julia.TypeValue">julia.TypeValue</a>
         —
@@ -96,22 +123,26 @@
     </header>
     <section>
         <p>This wraps any Julia <code>Type</code> value.</p>
-        <p>It is the same as <a href="#julia.AnyValue"><code>julia.AnyValue</code></a> except that indexing is used to access Julia's "curly" syntax for specifying parametric types:</p>
+        <p>It is the same as <a href="#julia.AnyValue"><code>AnyValue</code></a> except that indexing is used to access Julia's "curly" syntax for specifying parametric types:</p>
         <pre><code class="language-python hljs"><span class="hljs-keyword">from</span> julia <span class="hljs-keyword">import</span> Main <span class="hljs-keyword">as</span> jl
 <span class="hljs-comment"># equivalent to Vector{Int}() in Julia</span>
 jl.Vector[jl.Int]()</code></pre>
     </section>
-</article><article class="docstring">
+</article>
+
+<article class="docstring">
     <header>
         <a class="docstring-binding" id="julia.RawValue" href="#julia.RawValue">julia.RawValue</a>
         —
         <span class="docstring-category">Python Class</span>
     </header>
     <section>
-        <p>This can wrap any Julia value.</p>
+        <p>Wraps any Julia value with a rigid interface suitable for generic programming.</p>
+        <p>This is very similar to <a href="#julia.AnyValue"><code>AnyValue</code></a> except that indexing, calling, etc. will always return a `RawValue`.</p>
+        <p>Indexing with a tuple corresponds to indexing in Julia with multiple values. To index with a single tuple, it will need to be wrapped in another tuple.</p>
         <h6>Members</h6>
         <ul>
-            <li><code>__jl_any()</code>: Convert to a <a href="#julia.AnyValue"><code>julia.AnyValue</code></a> (or subclass). (See also <a href="../pythonjl/#Python.pyjl">pyjl</a>.)</li>
+            <li><code>_jl_any()</code>: Convert to a <a href="#julia.AnyValue"><code>AnyValue</code></a> (or subclass). (See also <a href="../pythonjl/#Python.pyjl">pyjl</a>.)</li>
         </ul>
     </section>
-</article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../pythonjl/">« The Julia module <code>Python</code></a><a class="docs-footer-nextpage" href="../conversion/">Conversion Rules »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 19 February 2021 20:46">Friday 19 February 2021</span>. Using Julia version 1.5.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+</article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../pythonjl/">« The Julia module <code>Python</code></a><a class="docs-footer-nextpage" href="../conversion/">Conversion Rules »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 22 February 2021 18:28">Monday 22 February 2021</span>. Using Julia version 1.5.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
